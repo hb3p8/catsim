@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>hello phaser!</title>
-        <script src="phaser.min.js"></script>
+        <script src="modules/phaser.min.js"></script>
     </head>
     <body>
 
@@ -40,13 +40,12 @@
 
         function preload () {
 
-            game.load.image('room', 'room.jpg');
-            //game.stage.backgroundColor = '#85b5e1';
-            game.load.spritesheet('cat', 'cat.png', 125, 136);
-            game.load.spritesheet('miska', 'miska.jpg', 568, 416);
-            game.load.spritesheet('platform', 'platform.png');
-            game.load.spritesheet('button','button.png');
-            game.load.spritesheet('veggies', 'fruitnveg32wh37.png', 32, 32);
+            game.load.image('room', 'sprites/room.jpg');
+            game.load.spritesheet('cat', 'sprites/cat.png', 125, 136);
+            game.load.spritesheet('miska', 'sprites/miska.jpg', 568, 416);
+            game.load.spritesheet('platform', 'sprites/platform.png');
+            game.load.spritesheet('button','sprites/button.png');
+            game.load.spritesheet('veggies', 'sprites/fruitnveg32wh37.png', 32, 32);
 
         }
 
