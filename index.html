@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>hello phaser!</title>
+        <script src="phaser.min.js"></script>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+
+    Vegetable = function (game) {
+
+        frame = game.rnd.between(0, 35);
+
+        var x = game.rnd.between(100, 900);
+        var y = game.rnd.between(0, 570);
+
+        Phaser.Sprite.call(this, game, x, y, 'veggies', frame);
+
+        game.physics.arcade.enable(this);
+    };
+
+    Vegetable.prototype = Object.create(Phaser.Sprite.prototype);
+    Vegetable.prototype.constructor = Vegetable;
+
+    window.onload = function() {
+
+        var game = new Phaser.Game(1022, 728, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        var money = 100;
+        var player;
+        var miska;
+        var platforms;
+        var cursors;
+        var jumpButton;
+        var button;
+
+        var group;
+
+        function preload () {
+
+            game.load.image('room', 'room.jpg');
+            //game.stage.backgroundColor = '#85b5e1';
+            game.load.spritesheet('cat', 'cat.png', 125, 136);
+            game.load.spritesheet('miska', 'miska.jpg', 568, 416);
+            game.load.spritesheet('platform', 'platform.png');
+            game.load.spritesheet('button','button.png');
+            game.load.spritesheet('veggies', 'fruitnveg32wh37.png', 32, 32);
+
+        }
+
+        function create () {
+
+            game.add.tileSprite(0, 0, 1200, 900, 'room');
+            // game.physics.startSystem(Phaser.Physics.ARCADE);
+            miska = game.add.sprite(0,680, 'miska');
+            miska.scale.set(0.1);
+            player = game.add.sprite(100, 200, 'cat');
+            player.animations.add('walk', [ 1, 2, 3]);
+            player.animations.add('left', [2]);
+            player.animations.add('right', [ 3]);
+            player.animations.add('up', [ 1]);
+            player.animations.play('walk', 5, true); 
+            // player.smoothed = false;
+            // player.anchor.setTo(0.5, 0.5);
+          
+
+            game.physics.arcade.enable(player);
+
+            game.physics.arcade.gravity.y = 800;
+
+            player.body.collideWorldBounds = true;
+
+            game.camera.follow(player);
+
+            platforms = game.add.physicsGroup();
+
+            platforms.create(400, 100, 'platform');
+            platforms.create(-200, 400, 'platform');
+            //platforms.create(400, 650, 'platform');
+
+            platforms.setAll('body.immovable', true);
+            platforms.setAll('body.moves', false);
+
+            cursors = game.input.keyboard.createCursorKeys();
+            jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            
+            //button for feeding
+            button = game.add.button(miska.centerX - 0,600, 'button', kill);
+            button.scale.set(0.3);
+                
+            scoreText = game.add.text(10, 0, 'money: 100', { font: "20px Arial", fill: "#ffffff", align: "left" });
+
+            // vegetables
+            group = game.add.group();
+
+            for (var i = 0; i < 7; i++)
+            {
+                group.add(new Vegetable(game));
+            }
+
+            group.setAll('body.collideWorldBounds', true);
+        }
+
+        function update () {
+
+            game.physics.arcade.collide(player, platforms);
+            game.physics.arcade.collide(group, platforms);
+
+            game.physics.arcade.overlap(player, group, collisionHandler, null, this);
+
+            player.body.velocity.x = 0;
+
+            
+            if (cursors.left.isDown)
+            {
+                player.body.velocity.x = -500;
+                player.animations.play('left', 5, true);
+            }
+            else if (cursors.right.isDown)
+            {
+                player.body.velocity.x = 500;
+                player.animations.play('right', 5, true);
+            }
+
+           else if (jumpButton.isDown && (player.body.onFloor() || player.body.touching.down))
+            {
+                player.body.velocity.y = -800;
+                player.animations.play('up', 5, true);
+            }
+           else if (player.body.onFloor() || player.body.touching.down)
+            {
+                player.animations.play('walk', 5, true);
+            }
+
+            if (Phaser.Point.distance (miska.position, player.position) < 200.0) {
+                button.visible = true;
+            }
+            else {
+                button.visible = false;
+            }
+
+        }
+
+        function updateText() {
+
+            scoreText.text = 'money: ' + money;
+        }
+
+        function kill(item) {
+            money -= 10;
+            updateText();
+            //button.kill();
+
+        }
+
+        function collisionHandler (player, vegetable) {
+
+            //  If the player collides with a vegetable it gets eaten :)
+            money += 10;
+            updateText();
+            vegetable.kill();
+
+        }
+
+    };
+
+    </script>
+
+    </body>
+</html>
