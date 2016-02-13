@@ -28,6 +28,27 @@
 
         var game = new Phaser.Game(1022, 728, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+        var ws = new WebSocket("ws://127.0.0.1/cat");
+
+        ws.onopen = function()
+        {
+          // Web Socket is connected, send data using send()
+          ws.send("HELLO");
+          console.log("Message is sent...");
+        };
+
+        ws.onmessage = function (evt) 
+        { 
+          var received_msg = evt.data;
+          console.log("Message is received: " + received_msg);
+        };
+
+        ws.onclose = function()
+        { 
+          // websocket is closed.
+          console.log("Connection is closed..."); 
+        };
+
         var money = 100;
         var player;
         var miska;
